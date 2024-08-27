@@ -5,14 +5,19 @@ def main():
 # user log in or sing up
 
 def user_login():
-    x = input('do you have a account: YES / NO ').upper()
+    x = input('do you have a account YES / NO :').upper()
     if x == "YES":
-        #return f"PLEASE LOGIN"
-        print(input("enter your password"))
+        user_input()
     elif x == "NO":
         sign_up()
     else:
-        print(f"invalid input")    
+        print(f"invalid input")
+
+def user_input(password,username):
+    password = input("enter your password")
+    username = input("enter your username: ")
+    # 
+    pass   
 
 def sign_up():
     pass_list = []
