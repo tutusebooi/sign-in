@@ -1,53 +1,89 @@
+import json
+import re
+
 def main():
     user_login()
-    sign_up()
-    user_name()
-
 
 def user_login():
-    x = input('do you have a account YES / NO :').upper()
+    x = input('Do you have an account (YES / NO): ').upper()
     if x == "YES":
         user_input()
     elif x == "NO":
         sign_up()
     else:
-        print(f"invalid input")
+        print("Invalid input. Please enter YES or NO.")
+        user_login()
 
-def user_input(password,username):
-    password = input("enter your password")
-    username = input("enter your username: ")
-    # 
-    pass   
+def user_input():
+    username = input("Enter your username: ")
+    password = input("Enter your password: ")
+    
+    if validate_login(username, password):
+        print("Login successful!")
+    else:
+        print("Invalid username or password.")
+        user_login()
+
+def validate_login(username, password):
+    try:
+        with open('user_data.json', 'r') as file:
+            users = json.load(file)
+            if username in users and users[username] == password:
+                return True
+    except FileNotFoundError:
+        print("No users found. Please sign up.")
+    return False
 
 def sign_up():
-    #sign up details need to be added to json file
-    pass_list = []
-    pass_word = input("create a password")
-    pass_list.append(pass_word)
-    print(f"your password is  : {pass_word}")
+    username = user_name()
+    
+    if username_exists(username):
+        print("Username already exists. Please try again.")
+        sign_up()
+    else:
+        password = create_password()
+        save_user(username, password)
+        print(f"Sign-up successful! You can now log in, {username}.")
 
+def username_exists(username):
+    try:
+        with open('user_data.json', 'r') as file:
+            users = json.load(file)
+            return username in users
+    except FileNotFoundError:
+        return False
 
-#creating username 
+def create_password():
+    while True:
+        password = input("Create a password: ")
+        if validate_password_strength(password):
+            print(f"Your password is: {password}")
+            return password
+        else:
+            print("Password not strong enough. Please try again.")
+
+def validate_password_strength(password):
+    # Password should be at least 8 characters long and include a number and special character
+    if len(password) < 8:
+        return False
+    if not re.search(r"\d", password):  # check if there's a number
+        return False
+    if not re.search(r"[!@#$%^&*()_+]", password):  # check for special character
+        return False
+    return True
+
 def user_name():
-    x = []
-    y = input("create a username: ")
-    print(f'your user name is {y}@gmail.com') 
-    x.append(y)   
-     
-# validate if the user input is valid and the pass word is strong
+    return input("Create a username: ")
 
+def save_user(username, password):
+    try:
+        with open('user_data.json', 'r') as file:
+            users = json.load(file)
+    except FileNotFoundError:
+        users = {}
+    
+    users[username] = password
+    with open('user_data.json', 'w') as file:
+        json.dump(users, file)
 
-
-
-
-
-
-# ucceptence of details and ask to login
-
-
-
-
-
-
-# Overwritte to a file to keep the data for futer login
 main()
